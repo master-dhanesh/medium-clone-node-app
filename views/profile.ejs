@@ -1,0 +1,11 @@
+<%- include("partials/header")%>
+
+    <form action="/profile" method="post" enctype="multipart/form-data">
+        <textarea name="about" placeholder="enter text here" cols="30" rows="10"><%= user.about%></textarea>
+        <img height="200" src="/uploads/<%=user.avatar%>" alt="">
+        <input type="file" name="avatar">
+        <input type="hidden" name="oldavatar" value="<%= user.avatar%>">
+        <button>Save Profile</button>
+    </form>
+
+    <%- include("partials/footer")%>
