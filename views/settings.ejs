@@ -1,0 +1,42 @@
+<%- include("partials/header")%>
+
+<form action="/settings" method="post">
+    <form action="/settings" method="POST">
+        <label for="">Email: </label>
+        <input name="email" type="email" value="<%= user.email%>" /><br />
+        <label for="">Username: </label>
+        <input name="username" type="text" value="<%= user.username%>" /><br />
+        <label for="">Name: </label>
+        <input name="name" type="text" value="<%= user.name%>" /><br />
+        <a style="text-decoration: none; color: black" href="/profile">
+            <label
+                style="
+                    width: 20%;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                "
+            >
+                <span>
+                    Profile Information <br />
+                    <small>Edit Bio, about, avatar</small>
+                </span>
+                <div
+                    style="
+                        width: 50px;
+                        height: 50px;
+                        background-size: cover;
+                        border-radius: 50%;
+                        background-position: center;
+                        background-image: url('/uploads/<%= user.avatar %>');
+                    "
+                ></div>
+            </label>
+        </a>
+        <button>Save Information</button>
+    </form>
+    <hr />
+    <a href="/delete">Delete User</a>
+</form>
+
+<%- include("partials/footer")%>

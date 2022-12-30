@@ -12,11 +12,7 @@ const LocalStrategy = require("passport-local");
 passport.use(User.createStrategy());
 
 router.get("/", function (req, res, next) {
-    res.render("index");
-});
-
-router.get("/home", isLoggedIn, function (req, res, next) {
-    res.render("home");
+    res.render("index", { isLoggedIn: req.user ? true : false });
 });
 
 router.get("/signup", function (req, res, next) {
@@ -33,7 +29,7 @@ router.post("/signup", function (req, res, next) {
             const authenticate = User.authenticate();
             authenticate(email, password, function (err, result) {
                 if (err) res.send(err);
-                res.redirect("/home");
+                res.redirect("/");
             });
         })
         .catch((err) => res.send(err));
@@ -46,7 +42,7 @@ router.get("/signin", function (req, res, next) {
 router.post(
     "/signin",
     passport.authenticate("local", {
-        successRedirect: "/home",
+        successRedirect: "/",
         failureRedirect: "/",
     }),
     function (req, res, next) {}
@@ -89,6 +85,27 @@ router.post("/profile", upload.single("avatar"), function (req, res, next) {
         .catch((err) => res.send(err));
 });
 
+router.get("/settings", isLoggedIn, function (req, res, next) {
+    res.render("settings", { user: req.user });
+});
+
+router.post("/settings", function (req, res, next) {
+    User.findByIdAndUpdate(req.user._id, req.body)
+        .then(() => {
+            res.redirect("/settings");
+        })
+        .catch((err) => res.send(err));
+});
+
+router.get("/delete", isLoggedIn, function (req, res, next) {
+    User.findByIdAndDelete(req.user._id)
+        .then(() => {
+            res.redirect("/signout");
+        })
+        .catch((err) => res.send(err));
+});
+
+// ---------------------------------------------------
 function isLoggedIn(req, res, next) {
     if (req.isAuthenticated()) return next();
     res.redirect("/");
