@@ -1,9 +1,11 @@
 <%- include("partials/header")%>
 
-    <form action="/signin" method="post">
-        <input type="email" name="email" placeholder="john@example.com">
-        <input type="password" name="password" placeholder="********">
-        <button>Sign In</button>
-    </form>
+<form action="/signin" method="post">
+    <input type="email" name="email" placeholder="john@example.com" />
+    <input type="password" name="password" placeholder="********" />
+    <button>Sign In</button>
+    <br />
+    <a href="/forget-password">Forget Password ?</a>
+</form>
 
-    <%- include("partials/footer")%>
+<%- include("partials/footer")%>

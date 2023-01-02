@@ -1,6 +1,8 @@
 var express = require("express");
 var router = express.Router();
 
+const nodemailer = require("nodemailer");
+
 const fs = require("fs");
 const path = require("path");
 const upload = require("./multer");
@@ -103,6 +105,73 @@ router.get("/delete", isLoggedIn, function (req, res, next) {
             res.redirect("/signout");
         })
         .catch((err) => res.send(err));
+});
+
+router.get("/reset-password", isLoggedIn, function (req, res, next) {
+    res.render("reset", { user: req.user });
+});
+
+router.post("/reset-password", isLoggedIn, function (req, res, next) {
+    req.user.changePassword(
+        req.body.oldpassword,
+        req.body.newpassword,
+        function (err) {
+            if (err) return res.send(err);
+            res.redirect("/signout");
+        }
+    );
+});
+
+router.get("/forget-password", function (req, res, next) {
+    res.render("forget");
+});
+router.post("/forget-password", function (req, res, next) {
+    User.findOne({ email: req.body.email })
+        .then((user) => {
+            if (!user)
+                return res.send(
+                    "Not found <a href='/forget-password'>Try Harder!</a>"
+                );
+
+            // next page url
+            const pageurl =
+                req.protocol + "://" + req.get("host") + "/change-password";
+
+            // send email to the email with gmail
+            const transport = nodemailer.createTransport({
+                service: "gmail",
+                host: "smtp.gmail.com",
+                port: 465,
+                auth: {
+                    user: "dhanesh1296@gmail.com",
+                    pass: "tmquwhokrbyetoke",
+                },
+            });
+
+            const mailOptions = {
+                from: "Dhanesh Pvt. Ltd.<dhanesh1296@gmail.com>",
+                to: req.body.email,
+                subject: "Password Reset Link",
+                text: "Do not share this link to anyone.",
+                html: `<a href=${pageurl}>Password Reset Link</a>`,
+            };
+
+            transport.sendMail(mailOptions, (err, info) => {
+                if (err) return res.send(err);
+                console.log(info);
+                return res.send(
+                    "<h1 style='text-align:center;color: tomato; margin-top:10%'><span style='font-size:60px;'>✔️</span> <br />Email Sent! Check your inbox , <br/>check spam in case not found in inbox.</h1>"
+                );
+            });
+            // ------------------------------
+        })
+        .catch((err) => {
+            res.send(err);
+        });
+});
+
+router.get("/change-password", function (req, res, next) {
+    res.send("Sahi baat hai....");
 });
 
 // ---------------------------------------------------
