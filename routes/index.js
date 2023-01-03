@@ -135,7 +135,11 @@ router.post("/forget-password", function (req, res, next) {
 
             // next page url
             const pageurl =
-                req.protocol + "://" + req.get("host") + "/change-password";
+                req.protocol +
+                "://" +
+                req.get("host") +
+                "/change-password/" +
+                user._id;
 
             // send email to the email with gmail
             const transport = nodemailer.createTransport({
@@ -144,7 +148,7 @@ router.post("/forget-password", function (req, res, next) {
                 port: 465,
                 auth: {
                     user: "dhanesh1296@gmail.com",
-                    pass: "tmquwhokrbyetoke",
+                    pass: "sdoskatodgmrlfky",
                 },
             });
 
@@ -159,6 +163,8 @@ router.post("/forget-password", function (req, res, next) {
             transport.sendMail(mailOptions, (err, info) => {
                 if (err) return res.send(err);
                 console.log(info);
+                user.resetPasswordToken = 1;
+                user.save();
                 return res.send(
                     "<h1 style='text-align:center;color: tomato; margin-top:10%'><span style='font-size:60px;'>✔️</span> <br />Email Sent! Check your inbox , <br/>check spam in case not found in inbox.</h1>"
                 );
@@ -170,8 +176,27 @@ router.post("/forget-password", function (req, res, next) {
         });
 });
 
-router.get("/change-password", function (req, res, next) {
-    res.send("Sahi baat hai....");
+router.get("/change-password/:id", function (req, res, next) {
+    res.render("changepassword", { id: req.params.id });
+});
+
+router.post("/change-password/:id", function (req, res) {
+    User.findById(req.params.id)
+        .then((user) => {
+            if (user.resetPasswordToken === 1) {
+                user.setPassword(req.body.password, function (err) {
+                    if (err) return res.send(err);
+                    user.resetPasswordToken = 0;
+                    user.save();
+                    res.redirect("/signout");
+                });
+            } else {
+                res.send(
+                    "Link Expired! <a href='/forget-password'>Try Again.</a>"
+                );
+            }
+        })
+        .catch((err) => res.send(err));
 });
 
 // ---------------------------------------------------
