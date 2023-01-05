@@ -7,9 +7,8 @@ const userModel = new mongoose.Schema({
     email: String,
     about: String,
     password: String,
-    interests: [],
-    lists: [],
-    stories: [],
+    lists: [{ type: mongoose.Schema.Types.ObjectId, ref: "blog" }],
+    stories: [{ type: mongoose.Schema.Types.ObjectId, ref: "blog" }],
     avatar: {
         type: String,
         default: "dummy.png",

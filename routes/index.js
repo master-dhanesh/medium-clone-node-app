@@ -199,10 +199,26 @@ router.post("/change-password/:id", function (req, res) {
         .catch((err) => res.send(err));
 });
 
-// ---------------------------------------------------
+// ------------------------------------------------------------
+
+router.get("/write", function (req, res, next) {
+    res.render("write", { title: "Write Blog" });
+});
+
+// ------------------------middlewares---------------------------
 function isLoggedIn(req, res, next) {
     if (req.isAuthenticated()) return next();
     res.redirect("/");
 }
+
+router.post("/uploadFile", upload.single("avatar"), function (req, res, next) {
+    res.json({
+        success: 1,
+        file: {
+            url: "http://localhost:3000/uploads/" + req.file.filename,
+            // any other image data you want to store, such as width, height, color, extension, etc
+        },
+    });
+});
 
 module.exports = router;
