@@ -6,11 +6,9 @@ const blogModel = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
-    read: String,
-    links: {
-        insta: "",
-        fb: "",
-        ln: "",
-        tw: "",
-    },
+    blog: Array,
 });
+
+const Blog = mongoose.model("blog", blogModel);
+
+module.exports = Blog;

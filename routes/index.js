@@ -8,6 +8,7 @@ const path = require("path");
 const upload = require("./multer");
 
 const User = require("../models/userModel");
+const Blog = require("../models/blogModel");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 
@@ -201,9 +202,32 @@ router.post("/change-password/:id", function (req, res) {
 
 // ------------------------------------------------------------
 
-router.get("/write", function (req, res, next) {
+router.get("/write", isLoggedIn, function (req, res, next) {
     res.render("write", { title: "Write Blog" });
 });
+
+router.post("/write", isLoggedIn, async function (req, res, next) {
+    const newBlog = new Blog({
+        author: req.user._id,
+        blog: req.body,
+    });
+    req.user.lists.push(newBlog._id);
+    await req.user.save();
+    await newBlog.save();
+});
+
+// ------------------------------------------------------------
+
+router.get("/lists", isLoggedIn, function (req, res, next) {
+    User.findById(req.user._id)
+        .populate("lists")
+        .then((user) => {
+            res.render("lists", { title: "User Blog", lists: user.lists });
+        })
+        .catch((err) => res.send(err));
+});
+
+// --------------------------------------------------------------
 
 // ------------------------middlewares---------------------------
 function isLoggedIn(req, res, next) {
@@ -216,7 +240,6 @@ router.post("/uploadFile", upload.single("avatar"), function (req, res, next) {
         success: 1,
         file: {
             url: "http://localhost:3000/uploads/" + req.file.filename,
-            // any other image data you want to store, such as width, height, color, extension, etc
         },
     });
 });
