@@ -15,7 +15,12 @@ const LocalStrategy = require("passport-local");
 passport.use(User.createStrategy());
 
 router.get("/", function (req, res, next) {
-    res.render("index", { isLoggedIn: req.user ? true : false });
+    Blog.find()
+        .populate("author")
+        .then((blogs) => {
+            res.render("index", { isLoggedIn: req.user ? true : false, blogs });
+        })
+        .catch((err) => res.send(err));
 });
 
 router.get("/signup", function (req, res, next) {
@@ -209,11 +214,12 @@ router.get("/write", isLoggedIn, function (req, res, next) {
 router.post("/write", isLoggedIn, async function (req, res, next) {
     const newBlog = new Blog({
         author: req.user._id,
-        blog: req.body,
+        blog: req.body.blog,
     });
     req.user.lists.push(newBlog._id);
     await req.user.save();
     await newBlog.save();
+    res.send("/lists");
 });
 
 // ------------------------------------------------------------
@@ -222,7 +228,11 @@ router.get("/lists", isLoggedIn, function (req, res, next) {
     User.findById(req.user._id)
         .populate("lists")
         .then((user) => {
-            res.render("lists", { title: "User Blog", lists: user.lists });
+            res.render("lists", {
+                title: "User Blog",
+                user: req.user,
+                lists: user.lists,
+            });
         })
         .catch((err) => res.send(err));
 });

@@ -6,7 +6,7 @@ const blogModel = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
-    blog: Array,
+    blog: String,
 });
 
 const Blog = mongoose.model("blog", blogModel);

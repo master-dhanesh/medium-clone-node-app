@@ -4,11 +4,30 @@
 <!--  -->
 <%- include("partials/navlogin")%>
 
+<style>
+    .blog img {
+        height: 300px;
+    }
+</style>
+<!--  -->
+
+<% blogs.forEach(elem => { %>
+<!-- <%= JSON.stringify(elem.blog)%> -->
+<div>
+    <h3>
+        <img height="30" src="/uploads/<%= elem.author.avatar%>" alt="" />
+        <%= elem.author.name%>
+    </h3>
+    <div class="blog"><%- elem.blog%></div>
+</div>
+<% }) %>
+
 <!--  -->
 <% } else {%>
 <!--  -->
 <%- include("partials/nav")%>
 <!--  -->
 <% }%>
+
 <!--  -->
 <%- include("partials/footer")%>

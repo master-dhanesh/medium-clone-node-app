@@ -1,5 +1,21 @@
 <%- include("partials/header")%>
+<style>
+    .blog img {
+        height: 300px;
+    }
+</style>
 <!--  -->
-<%= JSON.stringify(lists)%>
+
+<% lists.forEach(elem => { %>
+<!-- <%= JSON.stringify(elem.blog)%> -->
+<div>
+    <h3>
+        <img height="30" src="/uploads/<%= user.avatar%>" alt="" />
+        <%= user.name%>
+    </h3>
+    <div class="blog"><%- elem.blog%></div>
+</div>
+<% }) %>
+
 <!--  -->
 <%- include("partials/footer")%>

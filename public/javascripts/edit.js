@@ -52,11 +52,71 @@ const savbtn = document.querySelector("button");
 savbtn.addEventListener("click", function () {
     editor
         .save()
-        .then(async (response) => {
-            const { data } = await axios.post(
-                "http://localhost:3000/write",
-                response.blocks
-            );
+        .then(async ({ blocks }) => {
+            // console.log(blocks);
+            let blog = "";
+            blocks.forEach((element) => {
+                // console.log(element);
+
+                if (element.type === "paragraph") {
+                    blog += "<p>" + element.data.text + "</p>";
+                }
+                if (element.type === "header") {
+                    blog +=
+                        "<h" +
+                        element.data.level +
+                        ">" +
+                        element.data.text +
+                        "</h" +
+                        element.data.level +
+                        ">";
+                }
+                if (element.type === "list") {
+                    blog +=
+                        "<" +
+                        element.data.style[0] +
+                        element.type[0] +
+                        "/>" +
+                        element.data.items
+                            .map((i) => "<li>" + i + "</li>")
+                            .join("") +
+                        "<" +
+                        element.data.style[0] +
+                        element.type[0] +
+                        "/>";
+                }
+                if (element.type === "code") {
+                    blog +=
+                        "<" +
+                        element.type +
+                        ">" +
+                        element.data.code +
+                        "</" +
+                        element.type +
+                        ">";
+                }
+                if (element.type === "quote") {
+                    blog +=
+                        "<" +
+                        element.type[0] +
+                        ">" +
+                        element.data.text +
+                        "</" +
+                        element.type[0] +
+                        ">";
+                }
+                if (element.type === "image") {
+                    blog +=
+                        "<img src=" +
+                        element.data.file.url +
+                        " /><figcaption>" +
+                        element.data.caption +
+                        "</figcaption>";
+                }
+            });
+            const { data } = await axios.post("http://localhost:3000/write", {
+                blog,
+            });
             window.location.href = "http://localhost:3000/";
         })
         .catch((err) => console.log(err));
